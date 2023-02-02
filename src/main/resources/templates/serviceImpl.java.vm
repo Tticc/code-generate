@@ -1,0 +1,66 @@
+#parse("./templates/common/javaClassHeader.vm")#parse("./templates/common/javaClassVariable.vm")
+package ${package.ServiceImpl};
+
+import com.lingzhi.retail.dubhe.dto.PagerInfo;
+import com.lingzhi.retail.dubhe.exception.BusinessException;
+import com.lingzhi.retail.dubhe.service.BaseServiceImpl;
+import lombok.extern.slf4j.Slf4j;
+import ${package.Mapper}.${table.mapperName};
+import ${package.Service}.${table.serviceName};
+import ${packageNotEntity}.${entity}Domain;
+import $tempModelPackage.${entity}Response;
+import $tempModelPackage.${entity}Request;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+/**
+ * $!{table.comment}业务服务实现类
+ *
+ * @author ${author}
+ * @version 1.0.0
+ * @date ${date}
+ */
+@Slf4j
+@Service
+public class ${table.serviceImplName} extends ${superServiceImplClass}<Long,${entity}Domain> implements ${table.serviceName}, InitializingBean {
+    //我是日志
+    private static final Logger LOGGER = LoggerFactory.getLogger(${table.serviceImplName}.class);
+
+    @Autowired
+    private ${entity}Mapper ${serviceImplMapperName};
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        this.setBaseMapper(${serviceImplMapperName});
+    }
+
+    @Override
+    public ${entity}Response save${entity}(${entity}Request ${table.entityPath}Request) throws BusinessException{
+        return null;
+    }
+    @Override
+    public Integer update${entity}(${entity}Request ${table.entityPath}Request) throws BusinessException{
+        return null;
+    }
+
+    @Override
+    public ${entity}Response get${entity}(${tempPropertyType_PK} ${tempPropertyName_PK}){
+        return null;
+    }
+
+    @Override
+    public Integer delete${entity}(${tempPropertyType_PK} ${tempPropertyName_PK}) throws BusinessException{
+        return null;
+    }
+
+    @Override
+    public PagerInfo<${entity}Response> listPage(${entity}Request ${table.entityPath}Request, PagerInfo<${entity}Response> pagerInfo){
+        return null;
+    }
+    @Override
+    public List<${entity}Response> list(${entity}Request ${table.entityPath}Request){
+        return null;
+    }
+}

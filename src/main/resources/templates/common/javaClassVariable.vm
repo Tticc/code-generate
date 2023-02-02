@@ -1,0 +1,27 @@
+#parse("./templates/common/ignoreVariable.vm")
+##自定义全局变量方便应用
+#set($packageNotEntity = $package.Entity.replace(".entity",""))
+#set($tempModelPackage = ${package.Entity} + "_AeonIt")
+#set($tempModelPackage = $tempModelPackage.replace(".domain_AeonIt",".model"))
+
+#set($serviceImplMapperName = $table.mapperName.substring(0,1).toLowerCase() + $table.mapperName.substring(1))
+#foreach($field in ${table.fields})
+##处理主键与CODE字段(CODE一般为第二个字段，因此特殊处理))
+#if(${field.keyFlag})
+        #set($tempColumnName_PK = ${field.name})
+        #set($tempComment_PK = ${field.comment})
+        #set($tempPropertyName_PK = ${field.propertyName})
+        #set($tempPropertyType_PK = ${field.propertyType})
+#else
+    #if(!$tempCapitalName_Code)
+        #set($tempCapitalName_Code = ${field.capitalName} + "_AeonIt")
+        #set($tempCapitalName_Code = $tempCapitalName_Code.replace("_AeonIt",""))
+        #set($tempColumnName_Code = ${field.name} + "_AeonIt")
+        #set($tempColumnName_Code = $tempColumnName_Code.replace("_AeonIt",""))
+        #set($tempPropertyName_Code = ${field.propertyName} + "_AeonIt")
+        #set($tempPropertyName_Code = $tempPropertyName_Code.replace("_AeonIt",""))
+    #else
+    #end
+#end
+#end
+##

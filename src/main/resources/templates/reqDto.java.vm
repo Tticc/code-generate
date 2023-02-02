@@ -1,0 +1,43 @@
+#parse("./templates/common/javaClassHeader.vm")#parse("./templates/common/javaClassVariable.vm")
+package ${packageNotEntity}.dto.request;
+
+import com.lingzhi.retail.dubhe.dto.BaseDTO;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
+/**
+ * $!{table.comment}请求对象
+ *
+ * @author ${author}
+ * @version 1.0.0
+ * @date ${date}
+ */
+@ApiModel(description = "$!{table.comment}请求对象")
+@Data
+@EqualsAndHashCode(callSuper = true)
+public class ${entity}Request extends BaseDTO{
+    private static final long serialVersionUID = 1L;
+
+## ----------  BEGIN 字段循环遍历  ----------
+#foreach($field in ${table.fields})
+    #set($needIgnore = false)
+    #foreach($ignoreTableField in $ignoreTableFieldList)
+        #if($ignoreTableField == ${field.name})
+            #set($needIgnore = true)
+            #break
+        #end
+    #end
+    #if(!$needIgnore)
+        #if("$!field.comment" != "")
+    /**
+     * ${field.comment}
+     */
+        #end
+    @ApiModelProperty(value = "${field.comment}", name = "${field.propertyName}")
+    private ${field.propertyType} ${field.propertyName};
+    #end
+#end
+## ----------  END 字段循环遍历  ----------
+}

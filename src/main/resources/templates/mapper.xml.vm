@@ -1,0 +1,389 @@
+#parse("./templates/common/mapperXmlVariable.vm")
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${package.Mapper}.${table.mapperName}">
+#if(${enableCache})
+   <!-- 开启二级缓存 -->
+   <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/>
+#end
+#if(${baseResultMap})
+   <!-- 通用查询映射结果 -->
+   <resultMap id="BaseResultMap" type="${package.Entity}.${entity}Domain">
+#foreach($field in $tableFields)
+#if(${field.keyFlag})##生成主键排在第一位
+      <id column="${field.name}" property="${field.propertyName}" />
+#end
+#end
+#foreach($field in ${table.commonFields})##生成公共字段
+   <result column="${field.name}" property="${field.propertyName}" />
+#end
+#foreach($field in $tableFields)
+#if(!${field.keyFlag})##生成普通字段
+      <result column="${field.name}" property="${field.propertyName}" />
+#end
+#end
+   </resultMap>
+
+#end
+#if(${baseColumnList})
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+#foreach($field in $tableFields)
+#if($foreach.hasNext)
+    ${tableName}.${field.name},
+#else
+    ${tableName}.${field.name}
+#end
+#end
+    </sql>
+#end
+
+    <!--基础CRUD、分页、列表部分 begin-->
+##insert begin
+##    <insert id="insert" parameterType="${package.Entity}.${entity}Domain" keyProperty="id" useGeneratedKeys="true">
+##        insert into ${table.name}
+##        (#foreach($field in ${table.fields})#if(${field.keyFlag})${field.name}#else ,${field.name}#end#end)
+##        values
+##        (#foreach($field in ${table.fields})#if(${field.keyFlag})#{${field.propertyName}}#else ,#{${field.propertyName}}#end#end)
+##    </insert>
+##insert end
+##insert begin
+    <insert id="save" parameterType="${package.Entity}.${entity}Domain"
+            keyProperty="id" useGeneratedKeys="true">
+        insert into ${table.name}
+        (
+        #foreach($field in $tableFields)
+            #if($foreach.hasNext)
+            ${field.name},
+            #else
+            ${field.name}
+            #end
+        #end
+        #foreach($field in ${table.commonFields})
+        #if(${field.propertyName} != 'id')
+            , ${field.name}
+        #end
+        #end
+        )
+        values
+        (
+        #foreach($field in $tableFields)
+            #if($foreach.hasNext)
+            #{${field.propertyName}},
+            #else
+            #{${field.propertyName}}
+            #end
+        #end
+
+        #foreach($field in ${table.commonFields})
+        #if(${field.propertyName} != 'id')
+            , #{${field.propertyName}}
+        #end
+        #end
+        )
+    </insert>
+##insert end
+
+##updatedByCode begin
+    <update id="update" parameterType="${package.Entity}.${entity}Domain">
+        update ${table.name}
+        <set>
+#foreach($field in $tableFields)
+#if(${field.propertyName} == 'updateVersion')
+            update_version = update_version + 1,
+#else
+#set($needIgnore = false)
+#foreach($ignoreTableField in $ignoreTableFieldForUpdateSqlList)##忽略修改主键、CODE码、创建人、创建人名称、创建时间
+#if($ignoreTableField == ${field.name})
+    #set($needIgnore = true)
+    #break
+#end
+#end
+#if($needIgnore)
+#else
+#if("STRING" == ${field.columnType})
+            <if test="${field.propertyName} != null and ${field.propertyName} != ''">
+#else
+            <if test="${field.propertyName} != null">
+#end
+                ${field.name} = #{${field.propertyName}},
+            </if>
+#end
+#end
+#end
+        </set>
+        where $tempColumnName_PK = #{$tempPropertyName_PK}
+    </update>
+##updatedByCode end
+
+##updateForLogicDelete begin
+    <update id="delete">
+        update ${table.name}
+        <set>
+            deleted = 1,
+            updated_at = now()
+        </set>
+        where $tempColumnName_PK = #{$tempPropertyName_PK}
+    </update>
+##updateForLogicDelete end
+#*
+selectByPrimaryKey begin
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List">
+            <property name="tableName" value="t_alias"></property>
+        </include>
+        from ${table.name} t_alias
+        where t_alias.$tempColumnName_PK = #{$tempPropertyName_PK}
+        and t_alias.deleted = 0
+    </select>
+selectByPrimaryKey end
+*#
+##selectByCode begin
+    <select id="get" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List">
+            <property name="tableName" value="t_alias"></property>
+        </include>
+        from ${table.name} t_alias
+        where t_alias.$tempColumnName_PK = #{$tempPropertyName_PK}
+          and t_alias.deleted = 0
+    </select>
+##selectByCode end
+
+##分页查询 begin
+    <select id="listPage" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List">
+            <property name="tableName" value="t_alias"></property>
+        </include>
+        from ${table.name} t_alias
+        <where>
+            #foreach($field in $tableFields)
+            #if("STRING" == ${field.columnType})
+            <if test="${field.propertyName} != null and ${field.propertyName} != ''">
+            #else
+            <if test="${field.propertyName} != null">
+            #end##createTime与updatedAt特殊处理，备份代码：AND t_alias.${field.name} >= DATE_FORMAT(#{${field.propertyName}},'%Y-%m-%d %H:%i:%s')
+#if("createTime" == ${field.propertyName} || "updatedAt" == ${field.propertyName})
+                <![CDATA[
+                AND t_alias.${field.name} >= #{${field.propertyName}}
+                ]]>
+#else
+                AND t_alias.${field.name} = #{${field.propertyName}}
+            #end
+            </if>
+            #end
+            <!--创建开始与结束时间 begin-->
+            <if test="createdBeginTime != null and createdEndTime == null">
+                <![CDATA[
+                AND t_alias.created_at >= #{createdBeginTime}
+                ]]>
+            </if>
+            <if test="createdBeginTime == null and createdEndTime != null">
+                <![CDATA[
+                AND t_alias.created_at <= #{createdBeginTime}
+                ]]>
+            </if>
+            <if test="createdBeginTime != null and createdEndTime != null">
+                <![CDATA[
+                AND (t_alias.created_at between #{createdBeginTime} and #{createdEndTime})
+                ]]>
+            </if>
+            <!--创建开始与结束时间 end-->
+            <!--修改开始与结束时间 begin-->
+            <if test="updatedBeginTime != null and updatedEndTime == null">
+                <![CDATA[
+                AND t_alias.updated_at >= #{updatedBeginTime}
+                ]]>
+            </if>
+            <if test="updatedBeginTime == null and updatedEndTime != null">
+                <![CDATA[
+                AND t_alias.updated_at <= #{updatedBeginTime}
+                ]]>
+            </if>
+            <if test="updatedBeginTime != null and updatedEndTime != null">
+                <![CDATA[
+                AND (t_alias.updated_at between #{updatedBeginTime} and #{updatedEndTime})
+                ]]>
+            </if>
+            <!--修改开始与结束时间 end-->
+        </where>
+        order by t_alias.id asc
+    </select>
+##分页查询 end
+
+##list begin
+    <select id="list" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List">
+            <property name="tableName" value="t_alias"></property>
+        </include>
+        from ${table.name} t_alias
+        where
+            <trim prefixOverrides="AND |OR ">
+#foreach($field in $tableFields)
+#if("STRING" == ${field.columnType})
+            <if test="${field.propertyName} != null and ${field.propertyName} != ''">
+#else
+            <if test="${field.propertyName} != null">
+#end
+##createTime与updatedAt特殊处理
+#if("createTime" == ${field.propertyName} || "updatedAt" == ${field.propertyName})
+                <![CDATA[
+                AND t_alias.${field.name} >= #{${field.propertyName}}
+                ]]>
+#else
+                AND t_alias.${field.name} = #{${field.propertyName}}
+#end
+            </if>
+#end
+            </trim>
+            order by t_alias.id asc
+    </select>
+##list end
+
+##batchSave begin
+    <insert id="batchSave${entity}" parameterType="java.util.List"
+            keyProperty="id" useGeneratedKeys="true">
+        insert into ${table.name}
+        (
+        #foreach($field in $tableFields)
+        #if($foreach.hasNext)
+            ${field.name},
+            #else
+            ${field.name}
+        #end
+    #end
+        #foreach($field in ${table.commonFields})
+        #if(${field.propertyName} != 'id')
+            , ${field.name}
+        #end
+    #end
+        )
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+        (
+        #foreach($field in $tableFields)
+        #if($foreach.hasNext)
+            #{item.${field.propertyName}},
+            #else
+            #{item.${field.propertyName}}
+            #end
+    #end
+
+        #foreach($field in ${table.commonFields})
+        #if(${field.propertyName} != 'id')
+            , #{item.${field.propertyName}}
+        #end
+    #end
+        )
+        </foreach>
+    </insert>
+##batchSave end
+
+##selectByCodeForSpecifiedColumns begin
+    <select id="selectByIdForSpecifiedColumns" resultMap="BaseResultMap">
+        select
+        <foreach collection="dbColumnNameList" item="tempDBColumnName" index="index" separator=",">
+            ${tempDBColumnName}
+        </foreach>
+        from ${table.name} t_alias
+        where t_alias.$tempColumnName_PK = #{$tempPropertyName_PK}
+        and t_alias.deleted = 0
+    </select>
+##selectByCodeForSpecifiedColumns end
+
+##分页listPageForSpecifiedColumns begin
+    <select id="listPageForSpecifiedColumns" resultMap="BaseResultMap">
+		select
+        <foreach collection="dbColumnNameList" item="tempDBColumnName" index="index" separator=",">
+            ${tempDBColumnName}
+        </foreach>
+        from ${table.name} t_alias
+        <where>
+            #foreach($field in $tableFields)
+            #if("STRING" == ${field.columnType})
+            <if test="${field.propertyName} != null and ${field.propertyName} != ''">
+            #else
+            <if test="${field.propertyName} != null">
+            #end##createTime与updatedAt特殊处理，备份代码：AND t_alias.${field.name} >= DATE_FORMAT(#{${field.propertyName}},'%Y-%m-%d %H:%i:%s')
+#if("createTime" == ${field.propertyName} || "updatedAt" == ${field.propertyName})
+                <![CDATA[
+                AND t_alias.${field.name} >= #{${field.propertyName}}
+                ]]>
+#else
+                AND t_alias.${field.name} = #{${field.propertyName}}
+#end
+            </if>
+            #end
+            <!--创建开始与结束时间 begin-->
+            <if test="createdBeginTime != null and createdEndTime == null">
+                <![CDATA[
+                AND t_alias.created_at >= #{createdBeginTime}
+                ]]>
+            </if>
+            <if test="createdBeginTime == null and createdEndTime != null">
+                <![CDATA[
+                AND t_alias.created_at <= #{createdBeginTime}
+                ]]>
+            </if>
+            <if test="createdBeginTime != null and createdEndTime != null">
+                <![CDATA[
+                AND (t_alias.created_at between #{createdBeginTime} and #{createdEndTime})
+                ]]>
+            </if>
+            <!--创建开始与结束时间 end-->
+            <!--修改开始与结束时间 begin-->
+            <if test="updatedBeginTime != null and updatedEndTime == null">
+                <![CDATA[
+                AND t_alias.updated_at >= #{updatedBeginTime}
+                ]]>
+            </if>
+            <if test="updatedBeginTime == null and updatedEndTime != null">
+                <![CDATA[
+                AND t_alias.updated_at <= #{updatedBeginTime}
+                ]]>
+            </if>
+            <if test="updatedBeginTime != null and updatedEndTime != null">
+                <![CDATA[
+                AND (t_alias.updated_at between #{updatedBeginTime} and t_alias.updated_at #{updatedEndTime})
+                ]]>
+            </if>
+            <!--修改开始与结束时间 end-->
+        </where>
+        order by t_alias.id asc
+    </select>
+##分页listPageForSpecifiedColumns end
+
+##listForSpecifiedColumns begin
+    <select id="listForSpecifiedColumns" resultMap="BaseResultMap">
+        select
+        <foreach collection="dbColumnNameList" item="tempDBColumnName" index="index" separator=",">
+            ${tempDBColumnName}
+        </foreach>
+        from ${table.name} t_alias
+        where
+        <trim prefixOverrides="AND |OR ">
+#foreach($field in $tableFields)
+#if("STRING" == ${field.columnType})
+            <if test="${field.propertyName} != null and ${field.propertyName} != ''">
+#else
+            <if test="${field.propertyName} != null">
+#end
+##createTime与updatedAt特殊处理
+#if("createTime" == ${field.propertyName} || "updatedAt" == ${field.propertyName})
+                <![CDATA[
+                AND t_alias.${field.name} >= #{${field.propertyName}}
+                ]]>
+#else
+                AND t_alias.${field.name} = #{${field.propertyName}}
+#end
+            </if>
+#end
+        </trim>
+        order by t_alias.id asc
+    </select>
+##listForSpecifiedColumns end
+    <!--基础CRUD、分页、列表部分 end-->
+</mapper>

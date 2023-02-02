@@ -1,0 +1,23 @@
+#parse("./templates/common/ignoreVariable.vm")
+##mybatis xml中update类型语句不进行修改，如忽略修改主键、CODE码、创建人、创建人名称、创建时间
+#set($ignoreTableFieldForUpdateSqlList = ["id","data_code","create_by","create_time","created_by","created_at"])
+##自定义全局变量方便应用
+#set($tableFields = ${table.fields})
+#set($tableFields_Size = $tableFields.size())
+#foreach($field in $tableFields)
+##处理主键与CODE字段(CODE一般为第二个字段，因此特殊处理))
+#if(${field.keyFlag})
+    #set($tempColumnName_PK = ${field.name})
+    #set($tempPropertyName_PK = ${field.propertyName})
+#else
+    #if(!$tempCapitalName_Code)
+        #set($tempCapitalName_Code = ${field.capitalName} + "_TyanIt")
+        #set($tempCapitalName_Code = $tempCapitalName_Code.replace("_TyanIt",""))
+        #set($tempColumnName_Code = ${field.name} + "_TyanIt")
+        #set($tempColumnName_Code = $tempColumnName_Code.replace("_TyanIt",""))
+        #set($tempPropertyName_Code = ${field.propertyName} + "_TyanIt")
+        #set($tempPropertyName_Code = $tempPropertyName_Code.replace("_TyanIt",""))
+    #else
+    #end
+#end
+#end

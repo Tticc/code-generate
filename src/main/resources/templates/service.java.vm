@@ -1,0 +1,71 @@
+#parse("./templates/common/javaClassHeader.vm")#parse("./templates/common/javaClassVariable.vm")
+package ${package.Service};
+
+import com.lingzhi.retail.dubhe.dto.PagerInfo;
+import com.lingzhi.retail.dubhe.exception.BusinessException;
+import com.lingzhi.retail.dubhe.service.BaseService;
+import ${packageNotEntity}.${entity}Domain;
+import $tempModelPackage.${entity}Response;
+import $tempModelPackage.${entity}Request;
+
+import java.util.List;
+
+/**
+ * $!{table.comment}业务服务接口
+ *
+ * @author ${author}
+ * @version 1.0.0
+ * @date ${date}
+ */
+public interface ${table.serviceName} extends ${superServiceClass}<Long,${entity}Domain> {
+    /* 基础CRUD、分页、列表部分 begin */
+    /**
+     * 新增数据
+     *
+     * @param ${table.entityPath}Request 请求对象
+     * @return
+     */
+    ${entity}Response save${entity}(${entity}Request ${table.entityPath}Request) throws BusinessException;
+
+    /**
+     * 修改数据(根据id修改)
+     *
+     * @param ${table.entityPath}Request 请求对象
+     * @return
+     */
+    Integer update${entity}(${entity}Request ${table.entityPath}Request) throws BusinessException;
+
+    /**
+     * 根据数据编码查询
+     *
+     * @param ${tempPropertyName_PK} ${tempComment_PK}
+     * @return
+     */
+     ${entity}Response get${entity}(${tempPropertyType_PK} ${tempPropertyName_PK});
+
+    /**
+     * 逻辑删除数据
+     *
+     * @param ${tempPropertyName_PK} ${tempComment_PK}
+     * @return
+     */
+    Integer delete${entity}(${tempPropertyType_PK} ${tempPropertyName_PK}) throws BusinessException;
+
+    /**
+     * 分页查询
+     *
+     * @param ${table.entityPath}Request 分页查询请求对象
+     * @param pagerInfo 分页查询请求对象
+     * @return
+     */
+    PagerInfo<${entity}Response> listPage(${entity}Request ${table.entityPath}Request, PagerInfo<${entity}Response> pagerInfo);
+
+    /**
+     * 列表查询
+     *
+     * @param ${table.entityPath}Request 请求对象
+     * @return
+     */
+    List<${entity}Response> list(${entity}Request ${table.entityPath}Request);
+    /* 基础CRUD、分页、列表部分 end */
+}

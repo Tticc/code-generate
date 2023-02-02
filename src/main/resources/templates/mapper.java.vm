@@ -1,0 +1,43 @@
+#parse("./templates/common/javaClassHeader.vm")#parse("./templates/common/javaClassVariable.vm")
+package ${package.Mapper};
+
+import ${packageNotEntity}.${entity}Domain;
+import com.lingzhi.retail.dubhe.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
+
+/**
+ * $!{table.comment}Mapper接口
+ *
+ * @author ${author}
+ * @version 1.0.0
+ * @date ${date}
+ */
+@Mapper
+public interface ${table.mapperName} extends ${superMapperClass}<Long,${entity}Domain> {
+    /**
+     * 列表查询
+     *
+     * @param request
+     * @return List<${entity}Domain>
+     */
+    List<${entity}Domain> list(${entity}Domain request);
+
+    /**
+    * 分页查询
+    *
+    * @param request
+    * @return List<${entity}Domain>
+    */
+    List<${entity}Domain> listPage(${entity}Domain request);
+
+    /**
+    * 批量插入
+    *
+    * @param domainList
+    * @return int
+    */
+    int batchSave${entity}(List<${entity}Domain> domainList);
+}
