@@ -1,7 +1,7 @@
 #parse("./templates/common/javaClassHeader.vm")#parse("./templates/common/javaClassVariable.vm")
 package ${packageNotEntity}.dto.request;
 
-import com.lingzhi.retail.dubhe.dto.BaseDTO;
+import com.tester.base.dto.model.BaseDTO;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;

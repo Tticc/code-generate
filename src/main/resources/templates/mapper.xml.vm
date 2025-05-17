@@ -41,12 +41,9 @@
     <!-- 通用查询结果列 -->
     <sql id="list_column_list">
 #foreach($field in $tableFields)
-    #if("created_by" == ${field.name}
-    || "created_at" == ${field.name}
-    || "updated_by" == ${field.name}
-    || "updated_at" == ${field.name}
-    || "deleted" == ${field.name}
-    || "id" == ${field.name})
+    #if("create_time" == ${field.name}
+    || "update_time" == ${field.name}
+    || "deleted" == ${field.name})
     #else
         #if($foreach.hasNext)
             ${tableName}.`${field.name}`,
@@ -172,7 +169,7 @@ selectByPrimaryKey end
 ##selectByCode end
 
 ##list begin
-    <select id="list" resultMap="BaseResultMap">
+    <select id="list" resultMap="BaseResultMap" parameterType="${package.Entity}.${entity}Domain">
         select
         <include refid="Base_Column_List">
             <property name="tableName" value="t_alias"></property>

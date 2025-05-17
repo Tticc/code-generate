@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import ${package.Mapper}.${table.mapperName};
 import ${package.Service}.${table.serviceName};
 import ${packageNotEntity}.${entity}Domain;
+import $tempModelPackage.${entity}PageRequest;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
@@ -32,30 +33,11 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<Long,${en
     }
 
     @Override
-    public ${entity}Domain save${entity}(${entity}Domain ${table.entityPath}Domain) throws BusinessException{
+    public PageInfo<${entity}Domain> listPage(${entity}PageRequest request){
         return null;
     }
     @Override
-    public Integer update${entity}(${entity}Domain ${table.entityPath}Domain) throws BusinessException{
-        return null;
-    }
-
-    @Override
-    public ${entity}Domain get${entity}(${tempPropertyType_PK} ${tempPropertyName_PK}){
-        return null;
-    }
-
-    @Override
-    public Integer delete${entity}(${tempPropertyType_PK} ${tempPropertyName_PK}) throws BusinessException{
-        return null;
-    }
-
-    @Override
-    public PageInfo<${entity}Domain> listPage(${entity}Domain ${table.entityPath}Domain, PageInfo<${entity}Domain> pagerInfo){
-        return null;
-    }
-    @Override
-    public List<${entity}Domain> list(${entity}Domain ${table.entityPath}Domain){
+    public List<${entity}Domain> list(${entity}Domain domain){
         return null;
     }
 }
