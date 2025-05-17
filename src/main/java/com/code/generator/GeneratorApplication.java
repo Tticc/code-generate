@@ -15,7 +15,7 @@ public class GeneratorApplication {
     public static void main(String[] args) {
         CodeGeneratorRQ codeGeneratorRQ = new CodeGeneratorRQ();
         //包前缀
-        codeGeneratorRQ.setPackages("com.test.test");
+        codeGeneratorRQ.setPackages("com.tester.testersearch.dao");
         //代码签名
         codeGeneratorRQ.setAuthorName("wenc");
         //数据库IP地址
@@ -23,16 +23,15 @@ public class GeneratorApplication {
         //数据库IP端口
         codeGeneratorRQ.setPort("3306");
         //数据库名称
-        codeGeneratorRQ.setDatabaseName("norgans");
+        codeGeneratorRQ.setDatabaseName("test_parent");
         //生成代码本地目录
-        codeGeneratorRQ.setStorePath("C:\\Users\\wenc\\Desktop\\dao");
+        codeGeneratorRQ.setStorePath("C:\\Users\\18883\\Desktop\\dao");
         //数据库账号
         codeGeneratorRQ.setUserName("root");
         //数据库密码
         codeGeneratorRQ.setPassWord("123456");
         List<String> tableNames = new ArrayList<>();
-        tableNames.add("pro_ct");
-        tableNames.add("pro_ct_details");
+        tableNames.add("trade_candle_data");
 
 
         codeGeneratorRQ.setTableNames(tableNames);
