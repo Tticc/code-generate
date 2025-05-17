@@ -1,18 +1,15 @@
 #parse("./templates/common/javaClassHeader.vm")#parse("./templates/common/javaClassVariable.vm")
 package ${package.ServiceImpl};
 
-import com.lingzhi.retail.dubhe.dto.PagerInfo;
-import com.lingzhi.retail.dubhe.exception.BusinessException;
-import com.lingzhi.retail.dubhe.service.BaseServiceImpl;
+import com.github.pagehelper.PageInfo;
+import com.tester.base.dto.exception.BusinessException;
 import lombok.extern.slf4j.Slf4j;
 import ${package.Mapper}.${table.mapperName};
 import ${package.Service}.${table.serviceName};
 import ${packageNotEntity}.${entity}Domain;
-import $tempModelPackage.${entity}Response;
-import $tempModelPackage.${entity}Request;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Service;
+import javax.annotation.Resource;
 
 import java.util.List;
 /**
@@ -25,10 +22,8 @@ import java.util.List;
 @Slf4j
 @Service
 public class ${table.serviceImplName} extends ${superServiceImplClass}<Long,${entity}Domain> implements ${table.serviceName}, InitializingBean {
-    //我是日志
-    private static final Logger LOGGER = LoggerFactory.getLogger(${table.serviceImplName}.class);
 
-    @Autowired
+    @Resource
     private ${entity}Mapper ${serviceImplMapperName};
 
     @Override
@@ -37,16 +32,16 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<Long,${en
     }
 
     @Override
-    public ${entity}Response save${entity}(${entity}Request ${table.entityPath}Request) throws BusinessException{
+    public ${entity}Domain save${entity}(${entity}Domain ${table.entityPath}Domain) throws BusinessException{
         return null;
     }
     @Override
-    public Integer update${entity}(${entity}Request ${table.entityPath}Request) throws BusinessException{
+    public Integer update${entity}(${entity}Domain ${table.entityPath}Domain) throws BusinessException{
         return null;
     }
 
     @Override
-    public ${entity}Response get${entity}(${tempPropertyType_PK} ${tempPropertyName_PK}){
+    public ${entity}Domain get${entity}(${tempPropertyType_PK} ${tempPropertyName_PK}){
         return null;
     }
 
@@ -56,11 +51,11 @@ public class ${table.serviceImplName} extends ${superServiceImplClass}<Long,${en
     }
 
     @Override
-    public PagerInfo<${entity}Response> listPage(${entity}Request ${table.entityPath}Request, PagerInfo<${entity}Response> pagerInfo){
+    public PageInfo<${entity}Domain> listPage(${entity}Domain ${table.entityPath}Domain, PageInfo<${entity}Domain> pagerInfo){
         return null;
     }
     @Override
-    public List<${entity}Response> list(${entity}Request ${table.entityPath}Request){
+    public List<${entity}Domain> list(${entity}Domain ${table.entityPath}Domain){
         return null;
     }
 }

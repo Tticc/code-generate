@@ -1,12 +1,10 @@
 #parse("./templates/common/javaClassHeader.vm")#parse("./templates/common/javaClassVariable.vm")
 package ${package.Service};
 
-import com.lingzhi.retail.dubhe.dto.PagerInfo;
-import com.lingzhi.retail.dubhe.exception.BusinessException;
-import com.lingzhi.retail.dubhe.service.BaseService;
+import com.github.pagehelper.PageInfo;
+import com.tester.base.dto.exception.BusinessException;
+import com.tester.base.dto.dao.BaseService;
 import ${packageNotEntity}.${entity}Domain;
-import $tempModelPackage.${entity}Response;
-import $tempModelPackage.${entity}Request;
 
 import java.util.List;
 
@@ -22,18 +20,18 @@ public interface ${table.serviceName} extends ${superServiceClass}<Long,${entity
     /**
      * 新增数据
      *
-     * @param ${table.entityPath}Request 请求对象
+     * @param ${table.entityPath}Domain 请求对象
      * @return
      */
-    ${entity}Response save${entity}(${entity}Request ${table.entityPath}Request) throws BusinessException;
+    ${entity}Domain save${entity}(${entity}Domain ${table.entityPath}Domain) throws BusinessException;
 
     /**
      * 修改数据(根据id修改)
      *
-     * @param ${table.entityPath}Request 请求对象
+     * @param ${table.entityPath}Domain 请求对象
      * @return
      */
-    Integer update${entity}(${entity}Request ${table.entityPath}Request) throws BusinessException;
+    Integer update${entity}(${entity}Domain ${table.entityPath}Domain) throws BusinessException;
 
     /**
      * 根据数据编码查询
@@ -41,7 +39,7 @@ public interface ${table.serviceName} extends ${superServiceClass}<Long,${entity
      * @param ${tempPropertyName_PK} ${tempComment_PK}
      * @return
      */
-     ${entity}Response get${entity}(${tempPropertyType_PK} ${tempPropertyName_PK});
+     ${entity}Domain get${entity}(${tempPropertyType_PK} ${tempPropertyName_PK});
 
     /**
      * 逻辑删除数据
@@ -54,18 +52,18 @@ public interface ${table.serviceName} extends ${superServiceClass}<Long,${entity
     /**
      * 分页查询
      *
-     * @param ${table.entityPath}Request 分页查询请求对象
+     * @param ${table.entityPath}Domain 分页查询请求对象
      * @param pagerInfo 分页查询请求对象
      * @return
      */
-    PagerInfo<${entity}Response> listPage(${entity}Request ${table.entityPath}Request, PagerInfo<${entity}Response> pagerInfo);
+    PageInfo<${entity}Domain> listPage(${entity}Domain ${table.entityPath}Domain, PageInfo<${entity}Domain> pagerInfo);
 
     /**
      * 列表查询
      *
-     * @param ${table.entityPath}Request 请求对象
+     * @param ${table.entityPath}Domain 请求对象
      * @return
      */
-    List<${entity}Response> list(${entity}Request ${table.entityPath}Request);
+    List<${entity}Domain> list(${entity}Domain ${table.entityPath}Domain);
     /* 基础CRUD、分页、列表部分 end */
 }
