@@ -31,7 +31,7 @@ public class GeneratorApplication {
         //数据库密码
         codeGeneratorRQ.setPassWord("123456");
         List<String> tableNames = new ArrayList<>();
-        tableNames.add("trade_candle_data");
+        tableNames.add("candle_trade_signal");
 
 
         codeGeneratorRQ.setTableNames(tableNames);

@@ -20,10 +20,10 @@ public interface ${table.mapperName} extends ${superMapperClass}<${entity}Domain
     /**
      * 列表查询
      *
-     * @param request
+     * @param domain
      * @return List<${entity}Domain>
      */
-    List<${entity}Response> list(${entity}PageRequest request);
+    List<${entity}Domain> list(${entity}Domain domain);
 
     /**
     * 批量插入
